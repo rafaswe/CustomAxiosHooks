@@ -6,3 +6,5 @@ Tis custom hook accept 3 parameters-
 1. URL(API Address)
 2. Method Name(Axios Method Name)
 3. Parameter(any kind of Data)
+
+A demo execution is given. Run this code, you will see how this custom hook works.

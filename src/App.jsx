@@ -2,7 +2,10 @@
 
 import useAxios from "./hooks/useAxios"
 
-function App() { const productData ={
+function App() { 
+  
+
+const productData ={
   title: "hobe kono ekta",
   price: 110,
   description: "habijabi",
@@ -36,18 +39,27 @@ const patchSingleProduct ={
     price: 111,
   }
 }
-  // const [count, setCount] = useState(0)
+
+
+  // Getting all data 
   const {data}= useAxios("https://fakestoreapi.com/products","get")
+
+  // Getting data by ID 
   const {data:singleProductFData}= useAxios("https://fakestoreapi.com/products","getById",1)
   
   // console.log(data)
 
  
 
+  // Posting data 
   const {data:postData}= useAxios('https://fakestoreapi.com/products',"post",productData)
 
+  
+  // Updating data 
   const {data:singleProductUpdate}= useAxios("https://fakestoreapi.com/products","put",updateSingleProduct)
 
+  
+  // Patching data 
   const {data:singleProductPatch}= useAxios("https://fakestoreapi.com/products","patch",patchSingleProduct)
 
   return (
@@ -58,12 +70,15 @@ const patchSingleProduct ={
           data && data.map((item) => <p key={item.id}>{item.id}-{item.title}</p>)
         }
       </div>
+      
+
       <div>
         <h1>Single Product</h1>
         {
           singleProductFData && <p>{singleProductFData.title}</p>
         }
       </div>
+
 
       <div>
         <h1>After Posting Data</h1>
@@ -81,12 +96,14 @@ const patchSingleProduct ={
       </div>
 
 
+
       <div>
         <h1>Updating Data</h1>
         {
           singleProductUpdate && <p>After Update = {singleProductUpdate.title}</p>
         }
       </div>
+
 
 
       <div>
