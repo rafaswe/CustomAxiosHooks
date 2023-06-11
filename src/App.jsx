@@ -1,6 +1,9 @@
 // import './App.css'
 
-import useAxios from "./hooks/useAxios"
+import { useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import useAxios from "./hooks/useAxios";
 
 function App() { 
   
@@ -42,38 +45,85 @@ const patchSingleProduct ={
 
 
   // Getting all data 
-  const {data}= useAxios("https://fakestoreapi.com/products","get")
+  const {data,loading, haveError,errorMessage}= useAxios("/products","get")
+
 
   // Getting data by ID 
-  const {data:singleProductFData}= useAxios("https://fakestoreapi.com/products","getById",1)
+  const {data:singleProductFData,haveError:singleProductError,errorMessage:singleErrorMessage}= useAxios("/products","getById",1)
   
   // console.log(data)
 
  
 
   // Posting data 
-  const {data:postData}= useAxios('https://fakestoreapi.com/products',"post",productData)
+  const {data:postData,haveError:singlePostError,errorMessage:postErrorMessage}= useAxios('/products',"post",productData)
 
   
   // Updating data 
-  const {data:singleProductUpdate}= useAxios("https://fakestoreapi.com/products","put",updateSingleProduct)
+  const {data:singleProductUpdate,haveError:singleProductUpdateError,errorMessage:updateErrorMessage}= useAxios("/products","put",updateSingleProduct)
 
   
   // Patching data 
-  const {data:singleProductPatch}= useAxios("https://fakestoreapi.com/products","patch",patchSingleProduct)
+  const {data:singleProductPatch,haveError:singleProductPatchError,errorMessage:patchErrorMessage}= useAxios("/products","patch",patchSingleProduct)
+
+
+  useEffect(() => {
+    if (haveError) {
+      notify("All product section = " +errorMessage);
+    }
+    else if(singleProductError){
+      notify("ingle product section = " +singleErrorMessage)
+    }
+    else if(singlePostError){
+      notify("Post product section = " +postErrorMessage)
+    }
+    else if(singleProductUpdateError){
+      notify("Update product section = " +updateErrorMessage)
+    }
+    else if(singleProductPatchError){
+      notify("Patch product section = " +patchErrorMessage)
+    }
+  }, [haveError, errorMessage,singleProductError,singleErrorMessage,singlePostError,postErrorMessage,singleProductUpdateError,updateErrorMessage,singleProductPatchError,patchErrorMessage]);
+
+  
+
+  const notify = (message) => {
+    toast.error(message, {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'dark',
+    });
+  };
+
+  const loadData = () => {
+    toast.warn('Data is loading!', {
+      position: "top-right",
+      autoClose: 500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      })
+  }
 
   return (
     <div>
       <div className="">
         <h1>All product</h1>
-        {
-          data && data.map((item) => <p key={item.id}>{item.id}-{item.title}</p>)
-        }
+        {loading ? loadData(): data.map((item) => <p key={item.id}>{item.id}-{item.title}</p>)}
       </div>
       
 
       <div>
         <h1>Single Product</h1>
+        {singleProductError && <p>{errorMessage}</p>}
         {
           singleProductFData && <p>{singleProductFData.title}</p>
         }
@@ -82,6 +132,7 @@ const patchSingleProduct ={
 
       <div>
         <h1>After Posting Data</h1>
+        {singlePostError && <p>{errorMessage}</p>}
         {
           postData && <div>
             <p>Id = {postData.id}</p>
@@ -99,6 +150,7 @@ const patchSingleProduct ={
 
       <div>
         <h1>Updating Data</h1>
+        {singleProductUpdateError && <p>{errorMessage}</p>}
         {
           singleProductUpdate && <p>After Update = {singleProductUpdate.title}</p>
         }
@@ -108,10 +160,12 @@ const patchSingleProduct ={
 
       <div>
         <h1>Patching Data</h1>
+        {singleProductPatchError && <p>{errorMessage}</p>}
         {
           singleProductPatch && <p>After Patch = {singleProductPatch.price}</p>
         }
       </div>
+      <ToastContainer />
     </div>
   )
 }
