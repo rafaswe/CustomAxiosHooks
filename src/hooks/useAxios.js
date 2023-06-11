@@ -9,8 +9,7 @@ const useAxios = (url, method, parameter) => {
 
     const [data,setData]= useState([]);
     const [haveError,setHaveError]= useState(false);
-
-
+    const [loading,setLoading]= useState(false)
 
   const axiosInstance = axios.create({
     baseURL: 'https://fakestoreapi.com',
@@ -20,6 +19,7 @@ const useAxios = (url, method, parameter) => {
   axiosInstance.interceptors.request.use((config)=>{
 
     setHaveError(false)
+    setLoading(true)
         return config;
        
     },(error)=>{
@@ -46,11 +46,12 @@ const useAxios = (url, method, parameter) => {
             setErrorMessage("Something went wrong. Please try again later")
         }
         setHaveError(true)
-        
+        setLoading(false)
     })
 
     axiosInstance.interceptors.response.use((response)=>{
       setHaveError(false)
+      setLoading(false)
       return response;
       },(error)=>{
   
@@ -59,22 +60,18 @@ const useAxios = (url, method, parameter) => {
         
               // Handle specific status codes
               if (status === 401) {
-                // Perform actions for unauthorized errors (e.g., redirect to login page)
                 setErrorMessage('Unauthorized error');
               } else if (status === 404) {
-                // Perform actions for not found errors
                 setErrorMessage('The requested resource is not found on the server');
               } else {
-                // Handle other error status codes
                 setErrorMessage('something went wrong');
               }
             } else {
-              // Handle network errors
               setErrorMessage('Network error occurred');
             }  
             
             setHaveError(true)
-          
+            setLoading(false)
       })
   
 
@@ -113,6 +110,7 @@ const useAxios = (url, method, parameter) => {
         setData(response.data);
       } catch (error) {
         setHaveError(true)
+        setLoading(false)
       }
     };
 
@@ -122,8 +120,9 @@ const useAxios = (url, method, parameter) => {
       source.cancel('Request canceled by cleanup');
     };
   }, [url,method]);
+  
 
-  return { data, haveError,errorMessage };
+  return { data,loading, haveError,errorMessage };
 };
 
 export default useAxios;
